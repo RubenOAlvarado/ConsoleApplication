@@ -1,0 +1,12 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "\"backend for GBM Challenge\"",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest",
+        "start": "nodemon index.js"
+    },
+    "author": " Ruben O Alvarado",
+    "license": "ISC"
+}
