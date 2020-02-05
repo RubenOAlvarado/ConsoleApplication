@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //Las rutas que va a usra la aplicación para recibir las peticiones
-const routes = require('./routes/routes');
+const routes = require('./api/routes/routes');
 app.use('/', routes);
 
 // (optional) only made for logging and

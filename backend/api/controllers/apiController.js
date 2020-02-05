@@ -1,6 +1,7 @@
 const Balance = require('../models/balance');
 const Issuer = require('../models/issuer');
 const Order = require('../models/order');
+const moment = require('moment');
 
 exports.index = (req, res) => {
     console.log('Loading the balance');
@@ -18,36 +19,59 @@ exports.index = (req, res) => {
 
 exports.save_balance = (req, res) => {
     console.log('Saving balance');
-    let newBalance = new Balance(req.body);
-    newBalance.save((err, balance) => {
-        if (err) res.send(err);
-        res.json(balance);
-    });
+    let balance = req.body.initialBalances;
+    let issuers = balance.issuers;
+    let orders = req.body.orders;
+    let hour = moment().hour();
+    console.log(hour);
+    if(hour > 6 && hour < 15){
+        let newBalance = new Balance({cash:balance.cash, date:Date.now()});
+        newBalance.save((err, balance) => {
+            if (err) res.send(err);
+            save_issuers(issuers, balance._id);
+        });
+    }else{
+        res.json({balance, bussinessErrors:['INVALID_OPERATION']});    
+    }
+
 }
 
-exports.save_issuers = (req, res) => {
+save_issuers = ({issuers, balanceId}) => {
     console.log('Saving issuers');
-    let response = [];
-    let issuers = req.body;
+    let savedIssuers = [];
     issuers.forEach(issuer => {
-        let newIssuer = new Issuer(issuer);
+        let newIssuer = new Issuer({
+                issuerName:issuer.issuerName, 
+                balance:balanceId, 
+                totalShares:issuer.totalShares,
+                sharePrice: issuer.sharePrice
+            });
         newIssuer.save((err, result) => {
             if (err) res.send(err);
-            response.push(result);
+            savedIssuers.push(newIssuer);
         });
     });
-    res.json(response);
+    return savedIssuers;
 }
 
-exports.process = (req, res) => {
+processOrders = ({orders, issuer}) => {
     console.log('Processing the orders');
-    let { orders } = req.body;
-    orders.array.forEach(order => {
-        let newOrder = new Order(order);
-        //Aqui falta meter las validaciones antes de agregar la orden
-        newOrder.save((err, ordered) => {
-            if (err) res.send(err);
+    let response = [];
+    orders.forEach(order => {
+        idIssuer = Issuer.find({nameIssuer:issuer}, {_id:0}).exec((err,id) => {
+            if(err) return err;
+            return id;
         });
+        if(order.timestamp < moment().add(5, 'minutes')){
+            let newOrder = new Order(order);
+            //Aqui falta meter las validaciones antes de agregar la orden
+            newOrder.save((err, ordered) => {
+                if (err) res.send(err);
+                response.push('SUCESS');
+            });
+        }else{
+
+        }
     });
 }
 
