@@ -1,23 +1,22 @@
-module.exports = (app) => {
-    let apiController = require('../controllers/apiController');
+
+const express = require('express'),
+router = express.Router();
+
+const apiController = require('../controllers/apiController');
 
     //Show the current balance state
-    app.route('/')
-        .get(apiController.index);
+    router.get('/', apiController.index);
 
     //Routes for procces the orders
-    app.route('/process')
-        .post(apiController.process);
+    router.post('/process',apiController.process);
 
     //Route for save balance
-    app.route('/balance')
-        .post(apiController.save_balance);
+    router.post('/balance',apiController.save_balance);
 
     //Route for get balance
-    app.route('/balance/:balanceId')
-        .get(apiController.show_balance);
+    router.get('/balance/:balanceId',apiController.show_balance);
 
     //Route for save issuers
-    app.route('/issuers')
-        .post(apiController.save_issuers);
-}
+    router.post('/issuers',apiController.save_issuers);
+
+module.exports = router;

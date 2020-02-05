@@ -2,8 +2,6 @@ const Balance = require('../models/balance');
 const Issuer = require('../models/issuer');
 const Order = require('../models/order');
 
-const async = require('async');
-
 exports.index = (req, res) => {
     console.log('Loading the balance');
     Balance.find()
@@ -30,7 +28,7 @@ exports.save_balance = (req, res) => {
 exports.save_issuers = (req, res) => {
     console.log('Saving issuers');
     let response = [];
-    let { issuers } = req.body;
+    let issuers = req.body;
     issuers.forEach(issuer => {
         let newIssuer = new Issuer(issuer);
         newIssuer.save((err, result) => {
@@ -38,6 +36,7 @@ exports.save_issuers = (req, res) => {
             response.push(result);
         });
     });
+    res.json(response);
 }
 
 exports.process = (req, res) => {

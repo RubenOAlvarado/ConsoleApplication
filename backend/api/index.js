@@ -4,7 +4,6 @@ const express = require('express'),
     mongoose = require('mongoose'),
     cors = require('cors'),
     bodyParser = require('body-parser'),
-    Data = require('./api/models/Model'),
     logger = require('morgan');
 
 // this is our MongoDB database
@@ -27,8 +26,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //Las rutas que va a usra la aplicación para recibir las peticiones
-const routes = require('./api/routes/Routes');
-routes(app);
+const routes = require('./routes/routes');
+app.use('/', routes);
 
 // (optional) only made for logging and
 // bodyParser, parses the request body to be a readable json format
@@ -40,3 +39,5 @@ app.use(logger('dev'));
 app.listen(port);
 
 console.log('API server started on: ' + port);
+
+module.exports = app;
